@@ -1,44 +1,27 @@
-import collections
-
-RED = "Red"
-BLACK = "Black"
+import reprutils
 
 SPADES = "\N{BLACK SPADE SUIT}"
 CLUBS = "\N{BLACK CLUB SUIT}"
 DIAMONDS = "\N{BLACK DIAMOND SUIT}"
 HEARTS = "\N{BLACK HEART SUIT}"
 
-SUITS = (SPADES, CLUBS, DIAMONDS, HEARTS)
-RED_SUITS = (DIAMONDS, HEARTS)
-COLORS = (RED, BLACK)
-
-Rank = collections.namedtuple("Rank", "level name")
-
-RANKS = (
-    Rank(1, "A"), Rank(2, "2"), Rank(3, "3"), Rank(4, "4"), Rank(5, "5"),
-    Rank(6, "6"), Rank(7, "7"), Rank(8, "8"), Rank(9, "9"), Rank(10, "10"),
-    Rank(11, "J"), Rank(12, "Q"), Rank(13, "K"),
-    )
-
 
 class Card(object):
-    def __init__(self, rank, suit):
-        assert rank in RANKS
-        assert suit in SUITS
+    def __init__(self, rank=1, red=False, visible=True):
         self.rank = rank
-        self.suit = suit
-        self.color = suit in RED_SUITS and RED or BLACK
-        self.is_red = self.color is RED
-        self.is_black = not self.is_red
-        self.formatted_name = "{:>2s}{}".format(rank.name, suit)
+        self.red = red
+        self.visible = visible
+        self.index = self._get_index(rank)
+        self.suit = red and HEARTS or SPADES
+        self.name = f"{self.index:>2s}{self.suit}"
+
+    __repr__ = reprutils.GetattrRepr("rank", "suit")
         
     def __str__(self):
-        return self.formatted_name
+        return self.name
 
     def __repr__(self):
         return self.formatted_name
-        #classname = self.__class__.__name__
-        #return "{}({}, {})".format(classname, self.rank, self.suit)
 
     def __eq__(self, other):
         tuple1 = self.rank, self.suit
@@ -47,7 +30,33 @@ class Card(object):
         except AttributeError:
             return NotImplemented
         return tuple1 == tuple2
+
+    @staticmethod
+    def _get_index(rank):
+        if rank == 1:
+            return "A"
+        elif 2 <= rank <= 10:
+            return str(rank)
+        elif rank == 11:
+            return "J"
+        elif rank == 12:
+            return "Q"
+        elif rank == 13:
+            return "K"
+        else:
+            raise ValueError("rank must be between 1 and 13")
         
+
+def get_cards(visible=True):
+    cards = []
+    ranks = list(range(1, 13+1))
+    reds = [False, True, False, True, False, True, False, True]
+    for red in reds:
+        for rank in ranks:
+            card = Card(rank, red, visible)
+            cards.append(card)
+    return cards
+
         
 
 class Deck(list):
