@@ -29,8 +29,8 @@ setuptools.setup(
     license = "MIT",
     packages = ["spysol"],
     install_requires = REQUIRES,
-    #tests_require = ["pytest"],
-    #setup_requires = ["pytest-runner"],
+    tests_require = ["pytest"],
+    setup_requires = ["pytest-runner"],
     extras_require = {
         "tests": ["pytest"],
         },
