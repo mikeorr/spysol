@@ -5,6 +5,7 @@ def readme():
         return f.read()
 
 REQUIRES  =  [
+    "reprutils",
     ]
 
 setuptools.setup(
