@@ -56,35 +56,3 @@ def get_cards(visible=True):
             card = Card(rank, red, visible)
             cards.append(card)
     return cards
-
-        
-
-class Deck(list):
-    def __init__(self, suits=4, decks=1, *, original=None):
-        if original is not None:
-            self.original = original
-        else:
-            self.original = self.make_original(num_suits=suits, num_decks=decks)
-        self.reset()
-
-    def reset(self):
-        self[:] = self.original
-        self.suits = set(x.suit for x in self)
-
-    @staticmethod
-    def make_original(num_suits, num_decks):
-        if num_suits == 4:
-            suits = (SPADES, CLUBS, DIAMONDS, HEARTS)
-        elif num_suits == 2:
-            suits = (SPADES, SPADES, HEARTS, HEARTS)
-        elif suits == 1:
-            suits = (SPADES, SPADES, SPADES, SPADES)
-        else:
-            raise ValueError("arg 'suits'` must be 1, 2, or 4")
-        cards = []
-        for deck in range(num_decks):
-            for suit in suits:
-                for rank in RANKS:
-                    card = Card(rank, suit)
-                    cards.append(card)
-        return tuple(cards)
