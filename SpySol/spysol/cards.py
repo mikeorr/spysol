@@ -1,18 +1,17 @@
+import random
+
 import reprutils
 
 SPADES = "\N{BLACK SPADE SUIT}"
-CLUBS = "\N{BLACK CLUB SUIT}"
-DIAMONDS = "\N{BLACK DIAMOND SUIT}"
 HEARTS = "\N{BLACK HEART SUIT}"
 
 
 class Card(object):
-    def __init__(self, rank=1, red=False, visible=True):
+    def __init__(self, rank=1, suit=SPADES):
         self.rank = rank
-        self.red = red
-        self.visible = visible
+        self.suit = suit
+        self.red = suit == HEARTS
         self.index = self._get_index(rank)
-        self.suit = red and HEARTS or SPADES
         self.name = f"{self.index:>2s}{self.suit}"
 
     __repr__ = reprutils.GetattrRepr("rank", "suit")
@@ -31,6 +30,9 @@ class Card(object):
             return NotImplemented
         return tuple1 == tuple2
 
+    def is_run(self, prev):
+        return prev and prev.suit == self.suit and prev.rank == self.rank + 1
+
     @staticmethod
     def _get_index(rank):
         if rank == 1:
@@ -47,12 +49,78 @@ class Card(object):
             raise ValueError("rank must be between 1 and 13")
         
 
-def get_cards(visible=True):
+class Hand(list):
+    """A sequence of cards."""
+
+    def count_runs(self):
+        runs = 0
+        if len(self) > 0:
+            prev = self[0]
+            for card in self[:1]:
+        my_run = 0
+        prev = None
+        start = None
+        for i, card in enumerate(self):
+            if card.is_run(prev):
+                if start is None:
+                    start = i - 1
+            elif start is not None:
+                my_run = i - 1
+                runs += my_run
+                start = None
+
+        return runs
+
+
+class Deck(Hand):
+    ranks = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13)
+    suits = (SPADES, HEARTS, SPADES, HEARTS, SPADES, HEARTS, SPADES, HEARTS)
+
+    def __init__(self, cards=None, shuffle=False, random_=None):
+        for suit in self.suits:
+            for rank in self.ranks:
+                card = Card(rank, suit)
+                self.cards.append(card)
+        self.random = random_ or random
+        if shuffle:
+            self.shuffle()
+
+    def shuffle(self):
+        self.random.shuffle(self)
+        
+
+def get_cards():
     cards = []
-    ranks = list(range(1, 13+1))
-    reds = [False, True, False, True, False, True, False, True]
-    for red in reds:
+    ranks = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13)
+    suits = (SPADES, HEARTS, SPADES, HEARTS, SPADES, HEARTS, SPADES, HEARTS)
+    for suit in suits:
         for rank in ranks:
-            card = Card(rank, red, visible)
+            card = Card(rank, suit)
             cards.append(card)
     return cards
+
+def is_run(card1, card2):
+    return card1.suit == card2.suit and card1.rank == card2.rank + 1
+
+def is_full_suit(cards):
+    if len(cards) < 13:
+        return False
+    cards = reversed(cards)
+    suit = cards[0].suit
+    for i in range(12):
+        if card[i].rank != i + 1 or card[i].suit != suit:
+            return False
+    return True
+
+def count_runs(cards):
+    runs = 0
+    start = None
+    stop = None
+    prev = None
+    for i, card in enumerate(cards):
+        if prev:
+        else:
+            start = i
+            stop = i
+        prev = card
+    return runs
