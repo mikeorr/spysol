@@ -23,12 +23,10 @@ class Card(object):
         return self.formatted_name
 
     def __eq__(self, other):
-        tuple1 = self.rank, self.suit
         try:
-            tuple2 = other.rank, other.suit
+            return self.rank == other.rank and self.suit == other.suit
         except AttributeError:
             return NotImplemented
-        return tuple1 == tuple2
 
     def is_run(self, prev):
         return prev and prev.suit == self.suit and prev.rank == self.rank + 1
@@ -62,9 +60,6 @@ def get_cards():
 def count_runs(cards):
     runs = 0
     if cards:
-        prev = cards[0]
-        for card in cards[:1]:
-        my_run = 0
         prev = None
         start = None
         for i, card in enumerate(cards):
@@ -72,13 +67,14 @@ def count_runs(cards):
                 if start is None:
                     start = i - 1
             elif start is not None:
-                my_run = i - 1
-                runs += my_run
+                this_run = i - start + 1
+                runs.append(this_run)
                 start = None
+            prev = card
+    if start is not None:
+        this_run = len(cards) - start + 1
+        runs += this_run
     return runs
-
-def is_run(card1, card2):
-    return card1.suit == card2.suit and card1.rank == card2.rank + 1
 
 def is_full_suit(cards):
     if len(cards) < 13:

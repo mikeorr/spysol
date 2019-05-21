@@ -6,4 +6,3 @@ def test_get_cards():
     assert cards[0].index == "A"
     assert cards[0].suit == SPADES
     assert cards[0].name == " A" + SPADES
-    assert cards[0].visible
